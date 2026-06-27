@@ -1,0 +1,255 @@
+Вот краткий, но “правильный” README под твою текущую архитектуру — без воды, но с пониманием структуры и логики системы.
+
+---
+
+# 📦 Printer Dashboard (ITAM / Mini CMDB)
+
+Система учёта принтеров, картриджей и складских запасов с веб-интерфейсом, API и аналитикой.
+
+---
+
+# 🧱 Архитектура проекта
+
+Проект построен по слоистой архитектуре:
+
+```
+Router → Service → Repository → Database
+```
+
+Каждый слой имеет строгое разделение ответственности.
+
+---
+
+# 📁 Структура проекта
+
+## 🔹 app/
+
+Основной код приложения.
+
+### main.py
+
+Точка входа FastAPI приложения.
+
+---
+
+## ⚙️ core/
+
+Системные компоненты:
+
+* `config.py` — настройки (env, параметры проекта)
+* `database.py` — подключение к PostgreSQL (SQLAlchemy session)
+* `dependencies.py` — FastAPI зависимости (get_db, auth)
+* `security.py` — JWT, хеширование паролей
+
+---
+
+## 📊 enums/
+
+Типизированные справочники (без "магических строк"):
+
+* `PrinterStatus` — статус принтера
+* `UserRole` — роли пользователей
+* `RepairStatus` — статусы ремонта
+* `StockOperation` — операции склада
+
+---
+
+## 🗄 models/
+
+ORM модели SQLAlchemy 2.0:
+
+* `Printer` — принтеры
+* `Cartridge` — картриджи
+* `PrinterCartridge` — совместимость
+* `Stock` — склад
+* `StockMovement` — история склада
+* `Repair` — ремонтные заявки
+* `User` — пользователи
+* `Manufacturer / Department / Location` — справочники
+
+---
+
+## 🧠 repositories/
+
+Слой доступа к данным (DAO pattern):
+
+* CRUD операции
+* SQL запросы
+* поиск по сущностям
+* агрегация данных
+
+Примеры:
+
+* поиск принтеров
+* поиск картриджей
+* контроль остатков
+
+---
+
+## 🧩 services/
+
+Бизнес-логика:
+
+* управление принтерами
+* замена картриджей
+* складские операции
+* авторизация
+* глобальный поиск
+
+---
+
+## 🌐 routers/
+
+HTTP API слой (FastAPI):
+
+* `/printers`
+* `/cartridges`
+* `/stock`
+* `/search`
+* `/auth`
+* `/users`
+* `/dashboard`
+
+---
+
+## 📑 schemas/
+
+Pydantic модели:
+
+* валидация входных данных
+* DTO для API
+* разделение input/output моделей
+
+---
+
+## 🎨 templates/
+
+Jinja2 шаблоны (AdminLTE UI):
+
+* dashboard
+* printers list
+* cartridges list
+* login page
+
+---
+
+## 🧾 static/
+
+Frontend ресурсы:
+
+* CSS
+* JS
+* изображения
+* AdminLTE тема
+
+---
+
+## 🧰 utils/
+
+Вспомогательные модули:
+
+* SNMP (опрос принтеров)
+* QR генерация
+* Excel импорт/экспорт
+* hashing utilities
+
+---
+
+## 🧪 tests/
+
+Тестирование:
+
+* unit — тесты отдельных функций
+* api — тесты endpoints
+* integration — тесты всей системы
+
+---
+
+## 🐳 docker/
+
+Контейнеризация:
+
+* Dockerfile — образ приложения
+* docker-compose.yml — стек (PostgreSQL, Metabase, Adminer)
+* nginx.conf — reverse proxy (опционально)
+
+---
+
+# 🚀 Основные возможности системы
+
+* Учёт принтеров и их характеристик
+* Учёт картриджей (оригинал / аналог)
+* Совместимость принтер ↔ картридж
+* Складской учёт остатков
+* История движений (приход / расход / списание)
+* Ремонтные заявки
+* Пользователи и роли
+* Поиск по всей системе
+* Веб-дашборд (AdminLTE)
+* BI-аналитика (Metabase)
+
+---
+
+# 🔎 Поиск
+
+Система поддерживает:
+
+* поиск принтеров по модели / IP / серийному номеру
+* поиск картриджей по модели
+* глобальный поиск (printers + cartridges)
+
+---
+
+# 🔐 Безопасность
+
+* JWT авторизация
+* bcrypt хеширование паролей
+* role-based access control (RBAC)
+
+---
+
+# 📊 База данных
+
+Основные сущности:
+
+* printers
+* cartridges
+* printer_cartridges
+* stock
+* stock_movements
+* repairs
+* users
+* manufacturers
+* departments
+* locations
+
+---
+
+# 🧠 Архитектурные принципы
+
+* Чистое разделение слоёв
+* Dependency Injection (FastAPI)
+* SQLAlchemy 2.0 ORM
+* Enum вместо строковых статусов
+* Расширяемость (готовность к CMDB/ITSM)
+
+---
+
+# 📌 Цель проекта
+
+Создать lightweight IT Asset Management систему (mini CMDB):
+
+* прозрачный учёт оборудования
+* контроль расходников
+* снижение потерь
+* аналитика использования принтеров и картриджей
+
+---
+
+# 🚧 Статус
+
+Проект находится в стадии:
+
+> Sprint 1 — Core architecture completed
+> Sprint 2 — API + migrations (in progress)
+
