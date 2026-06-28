@@ -1,30 +1,20 @@
-from sqlalchemy import Enum, ForeignKey, Text, String
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import Column, Integer, ForeignKey, String, DateTime, Enum
+from datetime import datetime
 
+from app.models.base import Base
 from app.enums.repair_status import RepairStatus
-from app.models.base import Base, TimestampMixin
 
 
-class Repair(Base, TimestampMixin):
+class Repair(Base):
     __tablename__ = "repairs"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id = Column(Integer, primary_key=True, index=True)
 
-    printer_id: Mapped[int] = mapped_column(
-        ForeignKey("printers.id")
-    )
+    printer_id = Column(Integer, ForeignKey("printers.id"))
 
-    engineer_id: Mapped[int] = mapped_column(
-        ForeignKey("users.id")
-    )
+    status = Column(Enum(RepairStatus), default=RepairStatus.OPEN)
 
-    problem: Mapped[str] = mapped_column(Text)
-    solution: Mapped[str | None] = mapped_column(Text)
+    description = Column(String(255))
 
-    status: Mapped[RepairStatus] = mapped_column(
-        Enum(RepairStatus, name="repair_status"),
-        default=RepairStatus.OPEN
-    )
-
-    printer = relationship("Printer")
-    engineer = relationship("User")
+    created_at = Column(DateTime, default=datetime.utcnow)
+    closed_at = Column(DateTime, nullable=True)

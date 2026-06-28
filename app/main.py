@@ -1,14 +1,22 @@
 from fastapi import FastAPI
-from fastapi.staticfiles import StaticFiles
+from fastapi import FastAPI
 
-from app.core.config import settings
-
-app = FastAPI(
-    title=settings.APP_NAME
+from app.routers import (
+    dashboard_router,
+    printers_router,
+    cartridges_router,
+    stock_router,
+    search_router,
+    auth_router,
+    users_router,
 )
 
-app.mount(
-    "/static",
-    StaticFiles(directory="app/static"),
-    name="static"
-)
+app = FastAPI(title="Printer Dashboard")
+
+app.include_router(dashboard_router)
+app.include_router(printers_router)
+app.include_router(cartridges_router)
+app.include_router(stock_router)
+app.include_router(search_router)
+app.include_router(auth_router)
+app.include_router(users_router)

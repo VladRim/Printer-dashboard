@@ -1,25 +1,16 @@
-from sqlalchemy import ForeignKey, Integer
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import Column, Integer, ForeignKey
+from sqlalchemy.orm import relationship
 
-from app.models.base import Base, TimestampMixin
+from app.models.base import Base
 
 
-class Stock(Base, TimestampMixin):
+class Stock(Base):
     __tablename__ = "stock"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id = Column(Integer, primary_key=True, index=True)
 
-    cartridge_id: Mapped[int] = mapped_column(
-        ForeignKey("cartridges.id")
-    )
+    cartridge_id = Column(Integer, ForeignKey("cartridges.id"), unique=True)
 
-    quantity: Mapped[int] = mapped_column(default=0)
-    minimum_quantity: Mapped[int] = mapped_column(default=0)
+    quantity = Column(Integer, default=0)
 
-    cartridge = relationship("Cartridge", back_populates="stock")
-
-    movements = relationship(
-        "StockMovement",
-        back_populates="stock",
-        cascade="all, delete-orphan"
-    )
+    cartridge = relationship("Cartridge")

@@ -1,57 +1,33 @@
-from sqlalchemy import Enum, ForeignKey, String
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import Column, Integer, String, ForeignKey, Enum
+from sqlalchemy.orm import relationship
 
+from app.models.base import Base
 from app.enums.printer_status import PrinterStatus
-from app.models.base import Base, TimestampMixin
 
 
-class Printer(Base, TimestampMixin):
+class Printer(Base):
     __tablename__ = "printers"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id = Column(Integer, primary_key=True, index=True)
 
-    manufacturer_id: Mapped[int] = mapped_column(
-        ForeignKey("manufacturers.id")
-    )
+    vendor = Column(String(100))
+    model = Column(String(150), index=True)
 
-    department_id: Mapped[int | None] = mapped_column(
-        ForeignKey("departments.id"),
-        nullable=True
-    )
+    serial_number = Column(String(150), unique=True)
+    inventory_number = Column(String(150), unique=True)
 
-    location_id: Mapped[int | None] = mapped_column(
-        ForeignKey("locations.id"),
-        nullable=True
-    )
+    ip_address = Column(String(45))
+    mac_address = Column(String(50))
 
-    model: Mapped[str] = mapped_column(String(120), index=True)
+    status = Column(Enum(PrinterStatus), default=PrinterStatus.ACTIVE)
 
-    serial_number: Mapped[str | None] = mapped_column(
-        String(120),
-        unique=True,
-        nullable=True
-    )
+    manufacturer_id = Column(Integer, ForeignKey("manufacturers.id"))
+    department_id = Column(Integer, ForeignKey("departments.id"))
+    location_id = Column(Integer, ForeignKey("locations.id"))
 
-    inventory_number: Mapped[str | None] = mapped_column(
-        String(120),
-        unique=True,
-        nullable=True
-    )
-
-    hostname: Mapped[str | None] = mapped_column(String(120))
-    ip_address: Mapped[str | None] = mapped_column(String(45), index=True)
-    mac_address: Mapped[str | None] = mapped_column(String(17), unique=True)
-
-    status: Mapped[PrinterStatus] = mapped_column(
-        Enum(PrinterStatus, name="printer_status"),
-        default=PrinterStatus.ACTIVE
-    )
-
-    comment: Mapped[str | None] = mapped_column(String(500))
-
-    manufacturer = relationship("Manufacturer", back_populates="printers")
-    department = relationship("Department", back_populates="printers")
-    location = relationship("Location", back_populates="printers")
+    manufacturer = relationship("Manufacturer")
+    department = relationship("Department")
+    location = relationship("Location")
 
     cartridges = relationship(
         "PrinterCartridge",

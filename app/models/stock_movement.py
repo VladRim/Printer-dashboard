@@ -1,30 +1,18 @@
-from sqlalchemy import Enum, ForeignKey, Integer, String
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import Column, Integer, ForeignKey, DateTime, Enum
+from datetime import datetime
 
+from app.models.base import Base
 from app.enums.stock_operation import StockOperation
-from app.models.base import Base, TimestampMixin
 
 
-class StockMovement(Base, TimestampMixin):
-    __tablename__ = "stock_movements"
+class StockMovement(Base):
+    __tablename__ = "stock_movement"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id = Column(Integer, primary_key=True, index=True)
 
-    stock_id: Mapped[int] = mapped_column(
-        ForeignKey("stock.id")
-    )
+    cartridge_id = Column(Integer, ForeignKey("cartridges.id"))
 
-    user_id: Mapped[int] = mapped_column(
-        ForeignKey("users.id")
-    )
+    operation = Column(Enum(StockOperation))
+    quantity = Column(Integer)
 
-    operation: Mapped[StockOperation] = mapped_column(
-        Enum(StockOperation, name="stock_operation")
-    )
-
-    quantity: Mapped[int] = mapped_column(Integer)
-
-    comment: Mapped[str | None] = mapped_column(String(255))
-
-    stock = relationship("Stock", back_populates="movements")
-    user = relationship("User", back_populates="movements")
+    created_at = Column(DateTime, default=datetime.utcnow)

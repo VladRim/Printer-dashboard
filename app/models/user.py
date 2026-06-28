@@ -1,26 +1,14 @@
-from sqlalchemy import Enum, String
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-
+from sqlalchemy import Column, Integer, String, Enum
+from app.models.base import Base
 from app.enums.user_role import UserRole
-from app.models.base import Base, TimestampMixin
 
 
-class User(Base, TimestampMixin):
+class User(Base):
     __tablename__ = "users"
 
-    id: Mapped[int] = mapped_column(primary_key=True)
+    id = Column(Integer, primary_key=True, index=True)
 
-    username: Mapped[str] = mapped_column(
-        String(100),
-        unique=True,
-        index=True
-    )
+    username = Column(String(100), unique=True, nullable=False)
+    password_hash = Column(String(255), nullable=False)
 
-    password_hash: Mapped[str] = mapped_column(String(255))
-
-    role: Mapped[UserRole] = mapped_column(
-        Enum(UserRole, name="user_role"),
-        default=UserRole.VIEWER
-    )
-
-    movements = relationship("StockMovement", back_populates="user")
+    role = Column(Enum(UserRole), default=UserRole.USER)
