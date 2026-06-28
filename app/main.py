@@ -1,22 +1,20 @@
 from fastapi import FastAPI
-from fastapi import FastAPI
+from fastapi.responses import RedirectResponse
 
-from app.routers import (
-    dashboard_router,
-    printers_router,
-    cartridges_router,
-    stock_router,
-    search_router,
-    auth_router,
-    users_router,
-)
+from app.routers.v1 import printers, cartridges, search, dashboard
 
-app = FastAPI(title="Printer Dashboard")
+app = FastAPI()
 
-app.include_router(dashboard_router)
-app.include_router(printers_router)
-app.include_router(cartridges_router)
-app.include_router(stock_router)
-app.include_router(search_router)
-app.include_router(auth_router)
-app.include_router(users_router)
+# API
+app.include_router(printers.router)
+app.include_router(cartridges.router)
+app.include_router(search.router)
+
+# UI
+app.include_router(dashboard.router)
+
+
+@app.get("/")
+def root():
+    return RedirectResponse(url="/dashboard")
+

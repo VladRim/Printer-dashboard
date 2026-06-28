@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from sqlalchemy import or_
 
 from app.models.printer import Printer
 from app.models.cartridge import Cartridge
@@ -6,32 +7,32 @@ from app.models.cartridge import Cartridge
 
 class SearchRepository:
 
-    def __init__(self, session: Session):
-        self.session = session
+    def search(self, db: Session, text: str):
 
-    def search_printers(self, query: str):
-        return (
-            self.session.query(Printer)
+        printers = (
+            db.query(Printer)
             .filter(
-                Printer.model.ilike(f"%{query}%")
-                | Printer.serial_number.ilike(f"%{query}%")
-                | Printer.inventory_number.ilike(f"%{query}%")
-                | Printer.ip_address.ilike(f"%{query}%")
+                or_(
+                    Printer.model.ilike(f"%{text}%"),
+                    Printer.vendor.ilike(f"%{text}%"),
+                    Printer.serial_number.ilike(f"%{text}%"),
+                )
             )
             .all()
         )
 
-    def search_cartridges(self, query: str):
-        return (
-            self.session.query(Cartridge)
+        cartridges = (
+            db.query(Cartridge)
             .filter(
-                Cartridge.model.ilike(f"%{query}%")
+                or_(
+                    Cartridge.model.ilike(f"%{text}%"),
+                    Cartridge.vendor.ilike(f"%{text}%"),
+                )
             )
             .all()
         )
 
-    def global_search(self, query: str):
         return {
-            "printers": self.search_printers(query),
-            "cartridges": self.search_cartridges(query),
+            "printers": printers,
+            "cartridges": cartridges
         }
