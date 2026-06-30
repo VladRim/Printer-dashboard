@@ -1,38 +1,26 @@
 services:
-
   db:
     image: postgres:17
-
     container_name: printer-db
-
     restart: unless-stopped
-
     environment:
-      POSTGRES_DB: printer_dashboard
-      POSTGRES_USER: printer
-      POSTGRES_PASSWORD: printer
-
+      POSTGRES_DB: printers-db
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
     ports:
       - "5432:5432"
-
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
   app:
-
     build: .
-
     container_name: printer-api
-
     depends_on:
       - db
-
     ports:
       - "8000:8000"
-
     env_file:
       - .env
-
     volumes:
       - .:/app
 
